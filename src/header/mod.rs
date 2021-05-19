@@ -2,6 +2,7 @@ pub mod tag;
 pub use tag::*;
 
 use crate::{HeaderTag, structure::Structure};
+use core::mem::transmute;
 use bitflags::bitflags;
 
 bitflags! {
@@ -25,12 +26,12 @@ impl Header {
             Header {
                 // This is needed because Rust doesn't currently support null function pointers. Safe, I think.
                 entry_point: match entry_point {
-                    Some(ep) => core::mem::transmute(ep),
+                    Some(ep) => transmute(ep),
                     None => 0
                 },
-                stack: core::mem::transmute(stack), // lord forgive me
+                stack: transmute(stack), // lord forgive me
                 flags: flags.bits(),
-                tags: core::mem::transmute(tags)
+                tags: transmute(tags)
             }
         }
     }

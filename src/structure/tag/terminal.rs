@@ -36,7 +36,7 @@ impl Terminal {
     }
 
     pub unsafe fn call_term_write(addr: u64, buffer: &[u8]) -> () {
-        let term_write: fn(*const u8, usize) -> () = core::mem::transmute(addr as *const ());
+        let term_write: fn(*const u8, usize) -> () = core::mem::transmute(addr);
         term_write(buffer.as_ptr(), buffer.len())
     }
 
