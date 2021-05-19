@@ -1,4 +1,4 @@
-use crate::{new_tag, Tag, TagHeader, private::TagPrivate};
+use crate::{new_tag, HeaderTag, TagHeader, private::TagPrivate};
 
 new_tag! {
     pub struct Terminal {
@@ -15,7 +15,7 @@ impl Terminal {
         }
     }
 
-    pub const fn with_next<T: Tag>(next: *const T) -> Self {
+    pub const fn with_next<T: HeaderTag>(next: *const T) -> Self {
         Terminal {
             tag_header: TagHeader { identifier: Self::IDENTIFIER, next: unsafe { next as u64 } },
             flags: 0

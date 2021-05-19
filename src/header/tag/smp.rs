@@ -1,4 +1,4 @@
-use crate::{new_tag, Tag, TagHeader, private::TagPrivate};
+use crate::{new_tag, HeaderTag, TagHeader, private::TagPrivate};
 use bitflags::bitflags;
 
 bitflags! {
@@ -22,7 +22,7 @@ impl Smp {
         }
     }
 
-    pub const fn with_next<T: Tag>(next: *const T, flags: SmpFlags) -> Self {
+    pub const fn with_next<T: HeaderTag>(next: *const T, flags: SmpFlags) -> Self {
         Smp {
             tag_header: TagHeader { identifier: Self::IDENTIFIER, next: unsafe { next as u64 } },
             flags: flags.bits()

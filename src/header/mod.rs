@@ -1,7 +1,7 @@
 pub mod tag;
 pub use tag::*;
 
-use crate::{Tag, structure::Structure};
+use crate::{HeaderTag, structure::Structure};
 use bitflags::bitflags;
 
 bitflags! {
@@ -26,7 +26,7 @@ pub struct Header {
 }
 
 impl Header {
-    pub const fn new<T: Tag>(entry_point: Option<extern "sysv64" fn(structure: *const Structure) -> !>, stack: *const (), flags: HeaderFlags, tags: *const T) -> Header {
+    pub const fn new<T: HeaderTag>(entry_point: Option<extern "sysv64" fn(structure: *const Structure) -> !>, stack: *const (), flags: HeaderFlags, tags: *const T) -> Header {
         unsafe {
             Header {
                 // This is needed because Rust doesn't currently support null function pointers. Safe, I think.
