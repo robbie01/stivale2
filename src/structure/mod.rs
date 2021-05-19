@@ -21,7 +21,7 @@ impl Structure {
         unsafe { CStr::from_ptr(&self.bootloader_version as *const c_char) }
     }
 
-    pub fn tags(&self) -> *const () {
+    fn tags(&self) -> *const () {
         self.tags as *const ()
     }
 }
