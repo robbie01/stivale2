@@ -2,7 +2,6 @@
 #![feature(const_fn_trait_bound)]
 #![feature(const_raw_ptr_to_usize_cast)]
 #![feature(const_fn_fn_ptr_basics)]
-#![feature(const_fn_union)]
 #![feature(const_fn_transmute)]
 
 pub mod header;
