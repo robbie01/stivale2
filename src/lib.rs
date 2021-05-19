@@ -82,5 +82,6 @@ mod private {
     impl StructureTagPrivate for structure::Framebuffer {}
     impl StructureTagPrivate for structure::Memmap {}
     impl StructureTagPrivate for structure::Modules {}
+    impl StructureTagPrivate for structure::Rsdp {}
     impl StructureTagPrivate for structure::Terminal {}
 }
