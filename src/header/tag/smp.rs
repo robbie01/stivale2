@@ -1,4 +1,4 @@
-use crate::{new_tag, Tag, TagHeader};
+use crate::{new_tag, Tag, TagHeader, private::TagPrivate};
 use bitflags::bitflags;
 
 bitflags! {

@@ -24,7 +24,7 @@ macro_rules! new_tag {
         $v struct $name {
             tag_header: $crate::TagHeader
         }
-        impl $crate::Tag for $name {
+        impl $crate::private::TagPrivate for $name {
             const IDENTIFIER: u64 = $identifier;
         }
     };
@@ -35,7 +35,7 @@ macro_rules! new_tag {
             tag_header: $crate::TagHeader,
             $( $v2 $field : $type ),*
         }
-        impl $crate::Tag for $name {
+        impl $crate::private::TagPrivate for $name {
             const IDENTIFIER: u64 = $identifier;
         }
     }
@@ -43,18 +43,24 @@ macro_rules! new_tag {
 
 pub(crate) use new_tag;
 
-pub trait Tag: private::TagPrivate {
-    const IDENTIFIER: u64;
+pub trait Tag: private::TagPrivate {}
+pub trait HeaderTag: private::HeaderTagPrivate {}
+pub trait StructureTag: private::StructureTagPrivate {}
 
-    fn next<T: Tag>(&self) -> Option<&T> {
-        unsafe { (self.tag_header().next as *const T).as_ref() }
-    }
-}
+impl<T: private::TagPrivate> Tag for T {}
+impl<T: private::HeaderTagPrivate> HeaderTag for T {}
+impl<T: private::StructureTagPrivate> StructureTag for T {}
 
 mod private {
     use crate::*;
 
     pub trait TagPrivate {
+        const IDENTIFIER: u64;
+
+        fn next<T: Tag>(&self) -> Option<&T> {
+            unsafe { (self.tag_header().next as *const T).as_ref() }
+        }
+
         fn tag_header(&self) -> &TagHeader {
             unsafe { &*((self as *const Self).cast()) }
         }
@@ -63,14 +69,18 @@ mod private {
             unsafe { &mut *((self as *mut Self).cast()) }
         }
     }
-    impl TagPrivate for header::FiveLevelPaging {}
-    impl TagPrivate for header::Framebuffer {}
-    impl TagPrivate for header::Smp {}
-    impl TagPrivate for header::Terminal {}
-    impl TagPrivate for header::UnmapNull {}
-    impl TagPrivate for structure::Cmdline {}
-    impl TagPrivate for structure::Edid {}
-    impl TagPrivate for structure::Framebuffer {}
-    impl TagPrivate for structure::Memmap {}
-    impl TagPrivate for structure::Terminal {}
+    pub trait HeaderTagPrivate {}
+    pub trait StructureTagPrivate {}
+
+    impl HeaderTagPrivate for header::FiveLevelPaging {}
+    impl HeaderTagPrivate for header::Framebuffer {}
+    impl HeaderTagPrivate for header::Smp {}
+    impl HeaderTagPrivate for header::Terminal {}
+    impl HeaderTagPrivate for header::UnmapNull {}
+
+    impl StructureTagPrivate for structure::Cmdline {}
+    impl StructureTagPrivate for structure::Edid {}
+    impl StructureTagPrivate for structure::Framebuffer {}
+    impl StructureTagPrivate for structure::Memmap {}
+    impl StructureTagPrivate for structure::Terminal {}
 }
