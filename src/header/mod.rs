@@ -10,12 +10,6 @@ bitflags! {
     }
 }
 
-#[repr(C)]
-union EntryPoint {
-    fn_ptr: extern "sysv64" fn(*const Structure) -> !,
-    int_ptr: u64
-}
-
 #[repr(C, packed)]
 #[allow(dead_code)]
 pub struct Header {
@@ -31,9 +25,9 @@ impl Header {
             Header {
                 // This is needed because Rust doesn't currently support null function pointers. Safe, I think.
                 entry_point: match entry_point {
-                    Some(ep) => EntryPoint { fn_ptr: ep },
-                    None => EntryPoint { int_ptr: 0 }
-                }.int_ptr,
+                    Some(ep) => core::mem::transmute(ep),
+                    None => 0
+                },
                 stack: core::mem::transmute(stack), // lord forgive me
                 flags: flags.bits(),
                 tags: core::mem::transmute(tags)
