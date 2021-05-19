@@ -34,8 +34,8 @@ impl MemmapEntry {
         unsafe { slice::from_raw_parts_mut(self.base as *mut u8, self.length as usize) }
     }
 
-    pub fn r#type(&self) -> MemmapType {
-        FromPrimitive::from_u32(self.r#type).unwrap()
+    pub fn r#type(&self) -> Result<MemmapType, u32> {
+        FromPrimitive::from_u32(self.r#type).ok_or(self.r#type)
     }
 }
 
