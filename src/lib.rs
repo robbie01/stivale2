@@ -69,8 +69,8 @@ mod private {
             unsafe { &mut *((self as *mut Self).cast()) }
         }
     }
-    pub trait HeaderTagPrivate {}
-    pub trait StructureTagPrivate {}
+    pub trait HeaderTagPrivate: Tag {}
+    pub trait StructureTagPrivate: Tag {}
 
     impl HeaderTagPrivate for header::FiveLevelPaging {}
     impl HeaderTagPrivate for header::Framebuffer {}
