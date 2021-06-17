@@ -2,7 +2,7 @@ pub mod tag;
 pub use tag::*;
 
 use crate::{HeaderTag, structure::Structure};
-use core::mem::transmute;
+use core::{mem::transmute, ptr::null};
 use bitflags::bitflags;
 
 bitflags! {
@@ -11,27 +11,29 @@ bitflags! {
     }
 }
 
+pub type EntryPoint = extern "sysv64" fn(structure: *const Structure) -> !;
+
 #[repr(C, packed)]
 #[allow(dead_code)]
 pub struct Header {
-    entry_point: u64,
-    stack: u64,
+    entry_point: *const (),
+    stack: *const (),
     flags: u64,
-    tags: u64
+    tags: *const ()
 }
 
 impl Header {
-    pub const fn new<T: HeaderTag>(entry_point: Option<extern "sysv64" fn(structure: *const Structure) -> !>, stack: *const (), flags: HeaderFlags, tags: *const T) -> Header {
+    pub const fn new<T: HeaderTag>(entry_point: Option<EntryPoint>, stack: *const (), flags: HeaderFlags, tags: *const T) -> Header {
         unsafe {
             Header {
                 // This is needed because Rust doesn't currently support null function pointers. Safe, I think.
                 entry_point: match entry_point {
-                    Some(ep) => transmute(ep),
-                    None => 0
+                    Some(ep) => ep as *const (),
+                    None => null()
                 },
-                stack: transmute(stack), // lord forgive me
+                stack: stack,
                 flags: flags.bits(),
-                tags: transmute(tags)
+                tags: tags as *const ()
             }
         }
     }
